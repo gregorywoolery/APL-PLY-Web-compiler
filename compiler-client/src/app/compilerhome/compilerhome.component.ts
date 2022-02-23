@@ -13,16 +13,20 @@ export class CompilerhomeComponent implements OnInit {
   }
 
   codecontain: any;
-  outputcode: any;
+  outputcode: any = "see your output here";
 
   ngOnInit(): void {
   }
 
   submitCode() {
-    console.log(this.codecontain);
-    this.compilerService.compilecode(this.codecontain)
+    let codeJson = {
+      code: this.codecontain
+    }
+
+    this.compilerService.compilecode(codeJson)
       .then(_ => _.subscribe(
         result => {
+          console.log(result)
           this.outputcode = result;
         }
       ))

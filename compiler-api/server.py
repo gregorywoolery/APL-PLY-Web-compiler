@@ -1,7 +1,8 @@
+import code
 from os import error
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
-
+from compiler import codeAccept
 app = Flask(__name__)
 CORS(app)
 
@@ -9,7 +10,8 @@ CORS(app)
 @app.route("/api/compile", methods=["POST"])
 def Compile():
     data = request.get_json()
-    compiledTo = 1
+    print(data)
+    compiledTo = codeAccept(data['code'])
     return jsonify(compiledTo)
 
 

@@ -7,6 +7,7 @@ gunicorn==20.1.0
 itsdangerous==1.1.0
 Jinja2==2.11.2
 MarkupSafe==1.1.1
+ply==3.11
 pytz==2020.1
 simplejson==3.17.5
 six==1.15.0

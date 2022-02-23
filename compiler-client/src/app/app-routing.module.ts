@@ -8,7 +8,6 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-
     path: 'compiler',
     loadChildren: () => import('./compilerhome/compilerhome.module').then(m => m.CompilerhomeComponentModule)
   },
