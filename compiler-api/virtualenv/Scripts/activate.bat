@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\INNOVATION LAB\Documents\UTECH\Y4-SEM2\Projects\APL\APL-PLY-Web-compiler\compiler-api\virtualenv
+set VIRTUAL_ENV=C:\Users\matth\Documents\MEGAsync Downloads\Semester10\CIT4004 - Analysis of Programming Languages\APL Group Project\APL-PLY-Web-compiler\compiler-api\virtualenv
 
 if not defined PROMPT set PROMPT=$P$G
 
