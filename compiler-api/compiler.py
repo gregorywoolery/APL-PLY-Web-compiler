@@ -32,6 +32,18 @@ def t_NUMBER( t ) :
     t.value = int( t.value )
     return t
 
+#defining the element of a FLOAT
+def t_FLOAT(t):
+    r'\d+\.\d+'
+    t.value = float(t.value)
+    return t
+
+#defingin the element of an INT
+def t_INT(t):
+    r'\d+'
+    t.value = int(t.value)
+    return t
+
 #defining the elements of a NAME
 def t_NAME(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
@@ -58,12 +70,12 @@ precedence = (
     ( 'nonassoc', 'UMINUS' )
 )
 
-def p_expr_int_float(p):
+# assigns an expression to a variable name
+def p_var_assign(p): 
     '''
-    expr : INT
-         | FLOAT
+    var_assign : NAME EQUALS expr
     '''
-    p[0] = p[1]
+    p[0] = ('=', p[1], p[3])
 
 #command adds two expressions
 def p_add( p ) :
@@ -98,12 +110,13 @@ def p_expr2NUM( p ) :
     'expr : NUMBER'
     p[0] = p[1]
 
-# assigns an expression to a variable name
-def p_var_assign(p): 
+def p_expr_int_float(p):
     '''
-    var_assign : NAME EQUALS expr
+    expr : INT
+         | FLOAT
     '''
-    p[0] = ('=', p[1], p[3])
+    p[0] = p[1]
+
 
 #creates a variable name
 def p_expr_var(p):
