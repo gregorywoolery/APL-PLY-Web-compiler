@@ -17,7 +17,6 @@ tokens = (
 
 #token semantics
 t_ignore = ' \t'
-
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
@@ -70,12 +69,41 @@ precedence = (
     ( 'nonassoc', 'UMINUS' )
 )
 
+#Environment which store and retreive variables.
+env = {}
+
+
+
 # assigns an expression to a variable name
 def p_var_assign(p): 
     '''
     var_assign : NAME EQUALS expr
     '''
     p[0] = ('=', p[1], p[3])
+
+
+def p_expr(p):
+    '''
+    expr : expr MULTIPLY expr
+         | expr DIVIDE expr
+         | expr PLUS expr
+         | expr MINUS expr
+    '''
+    p[0] = (p[2], p[1], p[3])
+
+def p_expr_int_float(p):
+    '''
+    expr : INT
+         | FLOAT
+    '''
+    p[0] = p[1]
+
+#creates a variable name
+def p_expr_var(p):
+    '''
+    expr : NAME
+    '''
+    p[0] = ('var', p[1])
 
 #command adds two expressions
 def p_add( p ) :
@@ -110,20 +138,20 @@ def p_expr2NUM( p ) :
     'expr : NUMBER'
     p[0] = p[1]
 
-def p_expr_int_float(p):
-    '''
-    expr : INT
-         | FLOAT
-    '''
-    p[0] = p[1]
+def p_expr_assign( p ):
+    'expr : expr EQUALS expr'
+    p[0] = env[p[1]] = p[3]
 
 
-#creates a variable name
-def p_expr_var(p):
-    '''
-    expr : NAME
-    '''
-    p[0] = ('var', p[1])
+#def p_expr_var( p ):
+   # 'expr : expr var'
+
+  #  if p[2] == 'var':
+  #      if p[1] not in env:
+    #        return 'Variable is undeclared'
+    #    else :
+     #       env[p[1]]
+
 
 #command assigns Parenthesis
 def p_parens( p ) :
