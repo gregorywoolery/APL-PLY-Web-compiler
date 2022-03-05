@@ -14,6 +14,7 @@ tokens = [
     'MINUS',
     'DIVIDE',
     'MULTIPLY',
+    'EXPONENTIATION',
     'EQUALS',
     
     'LPAREN',
@@ -30,6 +31,7 @@ t_EQUALS = r'\='
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_NORMSTRING =  r'\"([^\\\n]|(\\.))*?\"'
+t_EXPONENTIATION = r'\^'
 
 
 
@@ -90,7 +92,8 @@ lexer = lex.lex()
 precedence = (
 
     ('left', 'PLUS', 'MINUS'),
-    ('left', 'MULTIPLY', 'DIVIDE')
+    ('left', 'MULTIPLY', 'DIVIDE'),
+    ('left', 'EXPONENTIATION', 'MULTIPLY')
 
 )
 
@@ -127,6 +130,7 @@ def p_expression(p):
                | expression DIVIDE expression
                | expression PLUS expression
                | expression MINUS expression
+               | expression EXPONENTIATION expression
     '''
     # Build our tree.
     p[0] = (p[2], p[1], p[3])
@@ -180,6 +184,8 @@ def run(p):
             return run(p[1]) * run(p[2])
         elif p[0] == '/':
             return run(p[1]) / run(p[2])
+        elif p[0] == '^':
+            return run(p[1]) ** run(p[2])
         elif p[0] == '=':
             env[p[1]] = run(p[2])
             return ''
