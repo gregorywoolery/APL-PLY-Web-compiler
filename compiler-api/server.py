@@ -10,7 +10,6 @@ CORS(app)
 @app.route("/api/compile", methods=["POST"])
 def Compile():
     data = request.get_json()
-    print(data)
     compiledTo = codeAccept(data['code'])
     return jsonify(compiledTo)
 
