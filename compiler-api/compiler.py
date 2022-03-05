@@ -1,182 +1,170 @@
-from ply import lex
+import ply.lex as lex
 import ply.yacc as yacc
+import sys
 
-tokens = (
-    'PLUS',
-    'MINUS',
-    'TIMES',
-    'DIV',
-    'LPAREN',
-    'RPAREN',
-    'NUMBER',
-    'EQUALS',
+# Create a list to hold all of the token names
+tokens = [
+
     'INT',
     'FLOAT',
     'NAME',
-)
+    'PLUS',
+    'MINUS',
+    'DIVIDE',
+    'MULTIPLY',
+    'EQUALS'
 
-#token semantics
-t_ignore = ' \t'
-t_PLUS    = r'\+'
-t_MINUS   = r'-'
-t_TIMES   = r'\*'
-t_DIV     = r'/'
-t_LPAREN  = r'\('
-t_RPAREN  = r'\)'
+]
+
+# Use regular expressions to define what each token is
+t_PLUS = r'\+'
+t_MINUS = r'\-'
+t_MULTIPLY = r'\*'
+t_DIVIDE = r'\/'
 t_EQUALS = r'\='
 
-#defining the elements of a NUMBER
-def t_NUMBER( t ) :
-    r'[0-9]+'
-    t.value = int( t.value )
-    return t
+# Ply's special t_ignore variable allows us to define characters the lexer will ignore.
+# We're ignoring spaces.
+t_ignore = r' '
 
-#defining the element of a FLOAT
+# More complicated tokens, such as tokens that are more than 1 character in length
+# are defined using functions.
+# A float is 1 or more numbers followed by a dot (.) followed by 1 or more numbers again.
 def t_FLOAT(t):
     r'\d+\.\d+'
     t.value = float(t.value)
     return t
 
-#defingin the element of an INT
+# An int is 1 or more numbers.
 def t_INT(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
-#defining the elements of a NAME
+# A NAME is a variable name. A variable can be 1 or more characters in length.
+# The first character must be in the ranges a-z A-Z or be an underscore.
+# Any character following the first character can be a-z A-Z 0-9 or an underscore.
 def t_NAME(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = 'NAME'
     return t
 
-#displays a new line
-def t_newline( t ):
-  r'\n+'
-  t.lexer.lineno += len( t.value )
+# Skip the current token and output 'Illegal characters' using the special Ply t_error function.
+def t_error(t):
+    print("Illegal characters!")
+    t.lexer.skip(1)
 
-#token error handling
-def t_error( t ):
-  print("Invalid Token:",t.value[0])
-  t.lexer.skip( 1 )
-
-#runs lex
+# Build the lexer
 lexer = lex.lex()
 
-#Operator precedence grammer
+# Ensure our parser understands the correct order of operations.
+# The precedence variable is a special Ply variable.
 precedence = (
-    ( 'left', 'PLUS', 'MINUS' ),
-    ( 'left', 'TIMES', 'DIV' ),
-    ( 'nonassoc', 'UMINUS' )
+
+    ('left', 'PLUS', 'MINUS'),
+    ('left', 'MULTIPLY', 'DIVIDE')
+
 )
 
-#Environment which store and retreive variables.
-env = {}
-
-
-
-# assigns an expression to a variable name
-def p_var_assign(p): 
+# Define our grammar. We allow expressions, var_assign's and empty's.
+def p_calc(p):
     '''
-    var_assign : NAME EQUALS expr
+    calc : expression
+         | var_assign
+         | empty
     '''
+    print(run(p[1]))
+
+def p_var_assign(p):
+    '''
+    var_assign : NAME EQUALS expression
+    '''
+    # Build our tree
     p[0] = ('=', p[1], p[3])
 
-
-def p_expr(p):
+# Expressions are recursive.
+def p_expression(p):
     '''
-    expr : expr MULTIPLY expr
-         | expr DIVIDE expr
-         | expr PLUS expr
-         | expr MINUS expr
+    expression : expression MULTIPLY expression
+               | expression DIVIDE expression
+               | expression PLUS expression
+               | expression MINUS expression
     '''
+    # Build our tree.
     p[0] = (p[2], p[1], p[3])
 
-def p_expr_int_float(p):
+def p_expression_int_float(p):
     '''
-    expr : INT
-         | FLOAT
+    expression : INT
+               | FLOAT
     '''
     p[0] = p[1]
 
-#creates a variable name
-def p_expr_var(p):
+def p_expression_var(p):
     '''
-    expr : NAME
+    expression : NAME
     '''
     p[0] = ('var', p[1])
 
-#command adds two expressions
-def p_add( p ) :
-    'expr : expr PLUS expr'
-    p[0] = p[1] + p[3]
+# Output to the user that there is an error in the input as it doesn't conform to our grammar.
+# p_error is another special Ply function.
+def p_error(p):
+    print("Syntax error found!")
 
-#command minus two expressions
-def p_sub( p ) :
-    'expr : expr MINUS expr'
-    p[0] = p[1] - p[3]
-
-#command negates the second element and stores the result in the first element
-def p_expr2uminus( p ) :
-    'expr : MINUS expr %prec UMINUS'
-    p[0] = - p[2]
-
-#command multiplies or divides two expressions
-def p_mult_div( p ) :
-    '''expr : expr TIMES expr
-            | expr DIV expr'''
-
-    if p[2] == '*' :
-        p[0] = p[1] * p[3]
-    else :
-        if p[3] == 0 :
-            print("Can't divide by 0")
-            raise ZeroDivisionError('integer division by 0')
-        p[0] = p[1] / p[3]
-
-#command assigns a NUMBER to an expression
-def p_expr2NUM( p ) :
-    'expr : NUMBER'
-    p[0] = p[1]
-
-def p_expr_assign( p ):
-    'expr : expr EQUALS expr'
-    p[0] = env[p[1]] = p[3]
-
-
-#def p_expr_var( p ):
-   # 'expr : expr var'
-
-  #  if p[2] == 'var':
-  #      if p[1] not in env:
-    #        return 'Variable is undeclared'
-    #    else :
-     #       env[p[1]]
-
-
-#command assigns Parenthesis
-def p_parens( p ) :
-    'expr : LPAREN expr RPAREN'
-    p[0] = p[2]
-
-#displays an error message for an input
-def p_error( p ):
-    print("Syntax error in input!")
-
-#assigns None to an empty element
 def p_empty(p):
     '''
     empty :
     '''
     p[0] = None
 
-#runs yacc
+# Build the parser
 parser = yacc.yacc()
 
+# Create the environment upon which we will store and retreive variables from.
+env = {}
+
+# The run function is our recursive function that 'walks' the tree generated by our parser.
+def run(p):
+    global env
+    if type(p) == tuple:
+        if p[0] == '+':
+            return run(p[1]) + run(p[2])
+        elif p[0] == '-':
+            return run(p[1]) - run(p[2])
+        elif p[0] == '*':
+            return run(p[1]) * run(p[2])
+        elif p[0] == '/':
+            return run(p[1]) / run(p[2])
+        elif p[0] == '=':
+            env[p[1]] = run(p[2])
+            return ''
+        elif p[0] == 'var':
+            if p[1] not in env:
+                return 'Undeclared variable found!'
+            else:
+                return env[p[1]]
+    else:
+        return p
+
+# Create a REPL to provide a way to interface with our calculator.
+# while True:
+#     try:
+#         s = input('>> ')
+#     except EOFError:
+#         break
+#     parser.parse(s)
+
 def codeAccept(code):
-    print(code)
-    res = parser.parse(code) # the input
+    # Place code in separate lines
+    arr = code.splitlines()
+    print(arr)
+
+    for line in arr:
+        parser.parse(line)
+
+
     compiledTo = {
-        "compiled": res
+        "compiled": 'res'
     }
 
     return compiledTo
