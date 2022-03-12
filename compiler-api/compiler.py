@@ -222,14 +222,14 @@ def run(p):
             env[p[1]] = run(p[2])         #eg. a = 5
             return ''
         elif p[0] == 'PRINT':
-            if p[2] in env and p[3] == ',' and p[4] in env: # eg. PRINT message, area
-                return env[p[2]] + env[p[4]]
-            elif p[3] == ',' and p[4] in env:               # eg. PRINT “area is “, area
-                return p[2] + env[p[4]]
+            if p[2] in env and p[3] == ',' and p[4] in env:         # eg. PRINT message, area
+                return env[p[2]] , env[p[4]]
+            elif p[2] not in env and p[3] == ',' and p[4] in env:   # eg. PRINT “area is “, area
+                return p[2] , env[p[4]]
             elif p[2] in env:
-                return env[p[2]]                            #eg. PRINT area
+                return env[p[2]]                                    #eg. PRINT area
             else:
-                return p[2]                                 #eg. PRINT "area is" 
+                return p[2]                                         #eg. PRINT "area is" 
         elif p[0] == 'var':
             if p[1] not in env:
                 return 'Undeclared variable found!'
