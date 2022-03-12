@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'leftPLUSMINUSleftMULTIPLYDIVIDEleftEXPONENTIATIONMULTIPLYCOMMENT DIVIDE EQUALS EXPONENTIATION FLOAT INT LPAREN MINUS MULTIPLY NAME NORMSTRING PLUS RPAREN\n    calc : expression \n         | var_assign\n         | empty\n    \n    var_assign : NAME EQUALS expression\n               | NAME EQUALS NORMSTRING\n    \n    expression : expression MULTIPLY expression\n               | expression DIVIDE expression\n               | expression PLUS expression\n               | expression MINUS expression\n               | expression EXPONENTIATION expression\n    \n    expression : INT\n               | FLOAT\n    \n    expression : NAME\n    \n    expression : LPAREN expression RPAREN\n    \n    empty :\n    '
+_lr_signature = 'nonassocPRINTleftPLUSMINUSleftMULTIPLYDIVIDEleftEXPONENTIATIONMULTIPLYCOMMENT DIVIDE EQUALS EXPONENTIATION FLOAT INT LPAREN MINUS MULTIPLY NAME NORMSTRING PLUS PRINT RPAREN SEMI\n    calc : expression \n         | statement\n         | var_assign\n         | empty\n    \n    statement : PRINT NAME\n              | PRINT NORMSTRING \n              | PRINT expression \n    \n    statement : PRINT error\n    \n    var_assign : NAME EQUALS expression\n               | NAME EQUALS NORMSTRING\n    \n    expression : expression MULTIPLY expression\n               | expression DIVIDE expression\n               | expression PLUS expression\n               | expression MINUS expression\n               | expression EXPONENTIATION expression\n    \n    expression : INT\n               | FLOAT\n    \n    expression : NAME\n    \n    expression : LPAREN expression RPAREN\n    \n    empty :\n    '
     
-_lr_action_items = {'INT':([0,8,9,10,11,12,13,14,],[5,5,5,5,5,5,5,5,]),'FLOAT':([0,8,9,10,11,12,13,14,],[6,6,6,6,6,6,6,6,]),'NAME':([0,8,9,10,11,12,13,14,],[7,16,16,16,16,16,16,16,]),'LPAREN':([0,8,9,10,11,12,13,14,],[8,8,8,8,8,8,8,8,]),'$end':([0,1,2,3,4,5,6,7,16,17,18,19,20,21,22,23,24,],[-15,0,-1,-2,-3,-11,-12,-13,-13,-6,-7,-8,-9,-10,-4,-5,-14,]),'MULTIPLY':([2,5,6,7,15,16,17,18,19,20,21,22,24,],[9,-11,-12,-13,9,-13,-6,-7,9,9,-10,9,-14,]),'DIVIDE':([2,5,6,7,15,16,17,18,19,20,21,22,24,],[10,-11,-12,-13,10,-13,-6,-7,10,10,-10,10,-14,]),'PLUS':([2,5,6,7,15,16,17,18,19,20,21,22,24,],[11,-11,-12,-13,11,-13,-6,-7,-8,-9,-10,11,-14,]),'MINUS':([2,5,6,7,15,16,17,18,19,20,21,22,24,],[12,-11,-12,-13,12,-13,-6,-7,-8,-9,-10,12,-14,]),'EXPONENTIATION':([2,5,6,7,15,16,17,18,19,20,21,22,24,],[13,-11,-12,-13,13,-13,13,13,13,13,-10,13,-14,]),'RPAREN':([5,6,15,16,17,18,19,20,21,24,],[-11,-12,24,-13,-6,-7,-8,-9,-10,-14,]),'EQUALS':([7,],[14,]),'NORMSTRING':([14,],[23,]),}
+_lr_action_items = {'INT':([0,9,10,11,12,13,14,15,16,],[6,6,6,6,6,6,6,6,6,]),'FLOAT':([0,9,10,11,12,13,14,15,16,],[7,7,7,7,7,7,7,7,7,]),'NAME':([0,9,10,11,12,13,14,15,16,],[8,18,19,18,18,18,18,18,18,]),'LPAREN':([0,9,10,11,12,13,14,15,16,],[9,9,9,9,9,9,9,9,9,]),'PRINT':([0,],[10,]),'$end':([0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26,27,28,29,30,],[-20,0,-1,-2,-3,-4,-16,-17,-18,-18,-5,-6,-7,-8,-11,-12,-13,-14,-15,-9,-10,-19,]),'MULTIPLY':([2,6,7,8,17,18,19,21,23,24,25,26,27,28,30,],[11,-16,-17,-18,11,-18,-18,11,-11,-12,11,11,-15,11,-19,]),'DIVIDE':([2,6,7,8,17,18,19,21,23,24,25,26,27,28,30,],[12,-16,-17,-18,12,-18,-18,12,-11,-12,12,12,-15,12,-19,]),'PLUS':([2,6,7,8,17,18,19,21,23,24,25,26,27,28,30,],[13,-16,-17,-18,13,-18,-18,13,-11,-12,-13,-14,-15,13,-19,]),'MINUS':([2,6,7,8,17,18,19,21,23,24,25,26,27,28,30,],[14,-16,-17,-18,14,-18,-18,14,-11,-12,-13,-14,-15,14,-19,]),'EXPONENTIATION':([2,6,7,8,17,18,19,21,23,24,25,26,27,28,30,],[15,-16,-17,-18,15,-18,-18,15,15,15,15,15,-15,15,-19,]),'RPAREN':([6,7,17,18,23,24,25,26,27,30,],[-16,-17,30,-18,-11,-12,-13,-14,-15,-19,]),'EQUALS':([8,],[16,]),'NORMSTRING':([10,16,],[20,29,]),'error':([10,],[22,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'calc':([0,],[1,]),'expression':([0,8,9,10,11,12,13,14,],[2,15,17,18,19,20,21,22,]),'var_assign':([0,],[3,]),'empty':([0,],[4,]),}
+_lr_goto_items = {'calc':([0,],[1,]),'expression':([0,9,10,11,12,13,14,15,16,],[2,17,21,23,24,25,26,27,28,]),'statement':([0,],[3,]),'var_assign':([0,],[4,]),'empty':([0,],[5,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,19 +27,24 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> calc","S'",1,None,None,None),
-  ('calc -> expression','calc',1,'p_calc','compiler.py',103),
-  ('calc -> var_assign','calc',1,'p_calc','compiler.py',104),
-  ('calc -> empty','calc',1,'p_calc','compiler.py',105),
-  ('var_assign -> NAME EQUALS expression','var_assign',3,'p_var_assign','compiler.py',111),
-  ('var_assign -> NAME EQUALS NORMSTRING','var_assign',3,'p_var_assign','compiler.py',112),
-  ('expression -> expression MULTIPLY expression','expression',3,'p_expression','compiler.py',129),
-  ('expression -> expression DIVIDE expression','expression',3,'p_expression','compiler.py',130),
-  ('expression -> expression PLUS expression','expression',3,'p_expression','compiler.py',131),
-  ('expression -> expression MINUS expression','expression',3,'p_expression','compiler.py',132),
-  ('expression -> expression EXPONENTIATION expression','expression',3,'p_expression','compiler.py',133),
-  ('expression -> INT','expression',1,'p_expression_int_float','compiler.py',140),
-  ('expression -> FLOAT','expression',1,'p_expression_int_float','compiler.py',141),
-  ('expression -> NAME','expression',1,'p_expression_var','compiler.py',147),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_parenthesis','compiler.py',153),
-  ('empty -> <empty>','empty',0,'p_empty','compiler.py',165),
+  ('calc -> expression','calc',1,'p_calc','compiler.py',113),
+  ('calc -> statement','calc',1,'p_calc','compiler.py',114),
+  ('calc -> var_assign','calc',1,'p_calc','compiler.py',115),
+  ('calc -> empty','calc',1,'p_calc','compiler.py',116),
+  ('statement -> PRINT NAME','statement',2,'p_statement_print','compiler.py',122),
+  ('statement -> PRINT NORMSTRING','statement',2,'p_statement_print','compiler.py',123),
+  ('statement -> PRINT expression','statement',2,'p_statement_print','compiler.py',124),
+  ('statement -> PRINT error','statement',2,'p_statement_print_error','compiler.py',131),
+  ('var_assign -> NAME EQUALS expression','var_assign',3,'p_var_assign','compiler.py',137),
+  ('var_assign -> NAME EQUALS NORMSTRING','var_assign',3,'p_var_assign','compiler.py',138),
+  ('expression -> expression MULTIPLY expression','expression',3,'p_expression','compiler.py',155),
+  ('expression -> expression DIVIDE expression','expression',3,'p_expression','compiler.py',156),
+  ('expression -> expression PLUS expression','expression',3,'p_expression','compiler.py',157),
+  ('expression -> expression MINUS expression','expression',3,'p_expression','compiler.py',158),
+  ('expression -> expression EXPONENTIATION expression','expression',3,'p_expression','compiler.py',159),
+  ('expression -> INT','expression',1,'p_expression_int_float','compiler.py',166),
+  ('expression -> FLOAT','expression',1,'p_expression_int_float','compiler.py',167),
+  ('expression -> NAME','expression',1,'p_expression_var','compiler.py',173),
+  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_parenthesis','compiler.py',179),
+  ('empty -> <empty>','empty',0,'p_empty','compiler.py',191),
 ]

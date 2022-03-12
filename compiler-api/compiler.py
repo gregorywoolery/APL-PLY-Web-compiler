@@ -20,6 +20,8 @@ tokens = [
     'LPAREN',
     'RPAREN',
     'COMMENT',
+    'PRINT',
+    'SEMI'
 ]
 
 # Use regular expressions to define what each token is
@@ -32,6 +34,7 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_NORMSTRING =  r'\"([^\\\n]|(\\.))*?\"'
 t_EXPONENTIATION = r'\^'
+t_SEMI = r'\;'
 
 
 
@@ -61,6 +64,11 @@ def t_NEWLINE(t):
     t.lexer.lineno += t.value.count("\n")
     print('line: ', t.lexer.lineno)
 
+def t_PRINT(t):
+    r'PRINT'
+    t.type = 'PRINT'
+    return t
+
 # def t_NORMSTRING(t):
 #     r'\"\"'
 #     t.type = 'NORMSTRING'
@@ -87,10 +95,12 @@ lexer = lex.lex()
 
 # lex.input("1234\n3434@")
 
+#PARSER
 # Ensure our parser understands the correct order of operations.
 # The precedence variable is a special Ply variable.
-precedence = (
 
+precedence = (
+    ('nonassoc','PRINT'),
     ('left', 'PLUS', 'MINUS'),
     ('left', 'MULTIPLY', 'DIVIDE'),
     ('left', 'EXPONENTIATION', 'MULTIPLY')
@@ -101,10 +111,26 @@ precedence = (
 def p_calc(p):
     '''
     calc : expression 
+         | statement
          | var_assign
          | empty
     '''
     print(run(p[1]))
+
+def p_statement_print(p):
+    '''
+    statement : PRINT NAME
+              | PRINT NORMSTRING 
+              | PRINT expression 
+    '''
+    p[0] = ('PRINT',p[1],p[2])
+
+
+def p_statement_print_error(p):
+    '''
+    statement : PRINT error
+    '''
+    print("Syntax error in print statement. Bad expression")
 
 def p_var_assign(p):
     '''
@@ -189,6 +215,11 @@ def run(p):
         elif p[0] == '=':
             env[p[1]] = run(p[2])
             return ''
+        elif p[0] == 'PRINT':
+            if p[2] in env:
+                return env[p[2]]
+            else:
+                return p[2]
         elif p[0] == 'var':
             if p[1] not in env:
                 return 'Undeclared variable found!'
