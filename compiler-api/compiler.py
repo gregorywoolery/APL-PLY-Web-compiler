@@ -21,7 +21,8 @@ tokens = [
     'RPAREN',
     'COMMENT',
     'PRINT',
-    'SEMI'
+    'SEMI',
+    'COMMA'
 ]
 
 # Use regular expressions to define what each token is
@@ -35,6 +36,7 @@ t_RPAREN = r'\)'
 t_NORMSTRING =  r'\"([^\\\n]|(\\.))*?\"'
 t_EXPONENTIATION = r'\^'
 t_SEMI = r'\;'
+t_COMMA = r'\,'
 
 
 
@@ -122,8 +124,12 @@ def p_statement_print(p):
     statement : PRINT NAME
               | PRINT NORMSTRING 
               | PRINT expression 
+              | PRINT NAME COMMA NAME
+              | PRINT NORMSTRING COMMA NAME
+              | PRINT expression COMMA NAME
+
     '''
-    p[0] = ('PRINT',p[1],p[2])
+    p[0] = ('PRINT',p[1],p[2],p[3],p[4])
 
 
 def p_statement_print_error(p):
@@ -203,23 +209,27 @@ def run(p):
     global env
     if type(p) == tuple:
         if p[0] == '+':
-            return run(p[1]) + run(p[2])
+            return run(p[1]) + run(p[2]) #eg. 5 + 5
         elif p[0] == '-':
-            return run(p[1]) - run(p[2])
+            return run(p[1]) - run(p[2]) #eg. 5 - 5
         elif p[0] == '*':
-            return run(p[1]) * run(p[2])
+            return run(p[1]) * run(p[2]) #eg. 5 * 5
         elif p[0] == '/':
-            return run(p[1]) / run(p[2])
+            return run(p[1]) / run(p[2]) #eg. 5 / 5
         elif p[0] == '^':
-            return run(p[1]) ** run(p[2])
+            return run(p[1]) ** run(p[2]) #eg. 5^5
         elif p[0] == '=':
-            env[p[1]] = run(p[2])
+            env[p[1]] = run(p[2])         #eg. a = 5
             return ''
         elif p[0] == 'PRINT':
-            if p[2] in env:
-                return env[p[2]]
+            if p[2] in env and p[3] == ',' and p[4] in env: # eg. PRINT message, area
+                return env[p[2]] + env[p[4]]
+            elif p[3] == ',' and p[4] in env:               # eg. PRINT “area is “, area
+                return p[2] + env[p[4]]
+            elif p[2] in env:
+                return env[p[2]]                            #eg. PRINT area
             else:
-                return p[2]
+                return p[2]                                 #eg. PRINT "area is" 
         elif p[0] == 'var':
             if p[1] not in env:
                 return 'Undeclared variable found!'
