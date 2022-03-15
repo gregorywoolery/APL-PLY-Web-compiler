@@ -1,0 +1,4 @@
+base = 3.0
+height = 14.5
+area = 0.5 * base * height
+message = “area is “
