@@ -12,9 +12,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 app = QtWidgets.QApplication(sys.argv)
 MainWindow = QtWidgets.QMainWindow()
-
+import os
+import subprocess
 import ply.lex as lex
 import ply.yacc as yacc
+import PyInstaller.__main__
 
 # Create a list to hold all of the token names
 tokens = [
@@ -186,7 +188,7 @@ def p_expression_parenthesis(p):
 # # Output to the user that there is an error in the input as it doesn't conform to our grammar.
 # # p_error is another special Ply function.
 def p_error(p):
-    setError("Syntax error found!", p)
+    setError("Syntax error found! %s" % p)
 
 def p_empty(p):
     '''
@@ -252,10 +254,27 @@ def run(p):
 def setError(error):
     error_text_box.append(error)
 
-def setOutput(message):
-    error_text_box.append(str(message))
+def setOutput(message1, message2 = ''):
+    outString1 = str(message1)
+    outString2 = str(message2)
+
+    if outString1.startswith('"') and outString1.endswith('"') :
+        outString1 = outString1.strip('"');
+    if outString2.startswith('"') and outString2.endswith('"') :
+        outString2 = outString2.strip('"');
+    newString = outString1 + outString2;
+
+
+    writeToFile(newString);
+    error_text_box.append(newString);
 
 def codeAccept():
+    error_text_box.append("Interpretting... please wait");
+    
+    #Remove file if exists
+    if os.path.exists("snake.py"):
+        os.remove("snake.py")
+
     code = code_text_box.toPlainText();
 
     # Place code in separate lines
@@ -264,20 +283,41 @@ def codeAccept():
 
     for line in arr:
         parser.parse(line)
-    
-    # # parser.parse(code)
 
-    # compiledTo = {
-    #     "compiled": 'res'
-    # }
+    print("program finiashed")
+    error_text_box.append("Interpreting Finished.");
+    error_text_box.append("Creating .exe file.");
 
-    # return compiledTo
 
+    # Break point in .exe to pause
+    snake = open("snake.py", 'a')
+    line = 'input("Press Enter to close")'
+    snake.write(line)
+    snake.close()
+
+
+    PyInstaller.__main__.run([
+    '--onefile',
+    'snake.py',
+    ])
+
+    if os.path.exists("snake.py"):
+        os.remove("snake.py")
+
+    error_text_box.append(".exe file is now ready !");
+
+    snake_exeDirectory = '%s\dist\snake.exe' % os.getcwd()
+    snake_exeDirectory = "%r"%snake_exeDirectory;
+    print(snake_exeDirectory);
+
+    # subprocess.call([snake_exeDirectory]);
 
 def writeToFile(line):
-    compiledFile = open("compiledFile.py", 'a')
-    compiledFile.write(line)
-    compiledFile.close()
+    snake = open("snake.py", 'a')
+    line = 'print("%s")\n' % line
+    snake.write(line)
+    snake.close()
+
 
 
 
