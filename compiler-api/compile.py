@@ -205,13 +205,13 @@ def p_expression_parenthesis_error(p):
 def p_error(p):
     global flag_for_error
     flag_for_error = 1
-    
     if p is not None:
-        # setError("Syntax error on line %s" % (p.lineno))
-        setError("Syntax error on line %d with %s" % (currentLine) (p.value))
-        # parser.errok()
+        if p.type == 'NORMSTRING':
+            setError("Syntax error on line %s with print statement" % (currentLine))
+        else:
+            setError("Syntax error on line %s." % (currentLine))
     else:
-        setError("Unexpected end of input");
+        setError("Line %s - Unexpected end of input" % (currentLine))
 
 def p_empty(p):
     '''
