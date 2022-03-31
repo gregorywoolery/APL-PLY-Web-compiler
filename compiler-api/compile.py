@@ -20,6 +20,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 import PyInstaller.__main__
 from datetime import datetime
+import py_compile
 
 # Create the environment upon which we will store and retreive variables from.
 env = {}
@@ -146,12 +147,6 @@ def p_statement_print(p):
         p[0] = ('PRINT', p[2])
 
 
-def p_statement_print_error(p):
-    '''
-    statement : PRINT error
-    '''
-    setError("Syntax error in print statement. Bad expression")
-
 def p_var_assign(p):
     '''
     var_assign : NAME EQUALS expression
@@ -191,9 +186,6 @@ def p_expression_parenthesis(p):
     expression : LPAREN expression RPAREN
     '''
     p[0] = p[2]
-
-def p_expression_parenthesis_error(p):
-    setError("Parenthesis error found! %s" % p)
 
 	
 
@@ -334,9 +326,11 @@ def codeAccept():
         'snake.py',
         ])
 
+
         #Removes temporary .py file from project
         if os.path.exists("snake.py"):
-            os.remove("snake.py")
+            py_compile.compile('snake.py')
+            # os.remove("snake.py")
 
         setConsoleMessage(".exe file is now ready ! Go to dist/snake.exe");
     except :
