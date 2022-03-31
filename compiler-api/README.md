@@ -3,7 +3,7 @@
 Use the following to set up python-flask api
 
 * Download python
-* Ensure pip is downloaded during setup
+* Ensure pip is downloaded during setup and set in env variables
 * cd compiler-api
 * Create virtual environment using the following:
 
@@ -16,4 +16,4 @@ Install:
 pip install -r requirements.txt
 
 * Once all requirement packages have been added in your virtual environment run program.
-python server.py
+python compiler.py

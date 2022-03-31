@@ -288,7 +288,7 @@ def setConsoleMessage(message):
 
 #Entry point where code to be interpretted is sent into
 #Function gets code from GUI and parses through each line
-def codeAccept():
+def codeAccept(createExe):
     try:
         setConsoleMessage("interpreting... please wait")
         
@@ -312,6 +312,14 @@ def codeAccept():
         #Reinitialize interpreter environment to be able to write new program
         reinitializeENV();
 
+        #Creates byte file temporary.py file
+        if os.path.exists("snake.py"):
+            py_compile.compile('snake.py')
+
+
+        if createExe == 0:
+            return
+
         setConsoleMessage("Creating .exe file.");
 
         # Break point in .exe to pause
@@ -325,12 +333,6 @@ def codeAccept():
         '--onefile',
         'snake.py',
         ])
-
-
-        #Removes temporary .py file from project
-        if os.path.exists("snake.py"):
-            py_compile.compile('snake.py')
-            # os.remove("snake.py")
 
         setConsoleMessage(".exe file is now ready ! Go to dist/snake.exe");
     except :
@@ -361,13 +363,14 @@ MainWindow.resize(1169, 942)
 MainWindow.setStyleSheet("background-color: rgb(0, 0, 57);")
 centralwidget = QtWidgets.QWidget(MainWindow)
 centralwidget.setObjectName("centralwidget")
-run_button = QtWidgets.QPushButton(centralwidget, clicked = lambda: codeAccept())
+run_button = QtWidgets.QPushButton(centralwidget, clicked = lambda: codeAccept(0))
 run_button.setGeometry(QtCore.QRect(1000, 40, 81, 41))
 run_button.setStyleSheet("color: rgb(255, 255, 255);\n"
 "background-color: rgb(56, 168, 0);\n"
 "font-weight: bold;\n"
 "border-radius: 10px;\n"
 "")
+
 run_button.setObjectName("run_button")
 clear_button = QtWidgets.QPushButton(centralwidget, clicked = lambda: code_text_box.clear())
 clear_button.setGeometry(QtCore.QRect(850, 40, 81, 41))
@@ -376,6 +379,17 @@ clear_button.setStyleSheet("background-color: rgb(188, 0, 0);\n"
 "font-weight: bold;\n"
 "color: rgb(255, 255, 255);")
 clear_button.setObjectName("clear_button")
+
+exe_button = QtWidgets.QPushButton(centralwidget, clicked = lambda: codeAccept(1))
+exe_button.setGeometry(QtCore.QRect(700, 40, 81, 41))
+exe_button.setStyleSheet("background-color: rgb(233, 66, 245);\n"
+"border-radius: 10px;\n"
+"font-weight: bold;\n"
+"font-size: 13px;\n"
+"color: rgb(255, 255, 255);")
+exe_button.setObjectName("exe_button")
+
+
 code_text_box = QtWidgets.QTextEdit(centralwidget)
 code_text_box.setGeometry(QtCore.QRect(30, 90, 1101, 601))
 code_text_box.setStyleSheet("border-radius: 5px;\n"
@@ -436,7 +450,7 @@ file_label_3.setStyleSheet("color: rgb(255, 0, 127);\n"
 "")
 file_label_3.setObjectName("file_label_3")
 file_label_4 = QtWidgets.QLabel(centralwidget)
-file_label_4.setGeometry(QtCore.QRect(810, 30, 311, 61))
+file_label_4.setGeometry(QtCore.QRect(650, 30, 480, 61))
 file_label_4.setStyleSheet("color: rgb(255, 0, 127);\n"
 "background-color: rgb(14, 9, 82);\n"
 "padding-left: 10px;\n"
@@ -454,6 +468,8 @@ file_label_3.raise_()
 file_label_4.raise_()
 run_button.raise_()
 clear_button.raise_()
+exe_button.raise_()
+
 MainWindow.setCentralWidget(centralwidget)
 statusbar = QtWidgets.QStatusBar(MainWindow)
 statusbar.setObjectName("statusbar")
@@ -466,6 +482,8 @@ _translate = QtCore.QCoreApplication.translate
 MainWindow.setWindowTitle(_translate("MainWindow", "SnakePY"))
 run_button.setText(_translate("MainWindow", "RUN"))
 clear_button.setText(_translate("MainWindow", "CLEAR"))
+exe_button.setText(_translate("MainWindow", "RUN/EXE"))
+
 code_text_box.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
